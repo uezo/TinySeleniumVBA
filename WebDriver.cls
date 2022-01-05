@@ -50,7 +50,7 @@ Public CMD_STATUS
 Public CMD_NEW_SESSION
 Public CMD_GET_ALL_SESSIONS
 Public CMD_QUIT
-Public CMD_GET_CURRENT_WINDOW_HANDLE
+'Public CMD_GET_CURRENT_WINDOW_HANDLE 'this command is depreciated - GCUser99's training homework from uezo
 Public CMD_W3C_GET_CURRENT_WINDOW_HANDLE
 Public CMD_GET_WINDOW_HANDLES
 Public CMD_W3C_GET_WINDOW_HANDLES
@@ -480,7 +480,7 @@ Private Sub InitCommands()
     CMD_NEW_SESSION = Array("POST", "/session")
     CMD_GET_ALL_SESSIONS = Array("GET", "/sessions")
     CMD_QUIT = Array("DELETE", "/session/$sessionId")
-    CMD_GET_CURRENT_WINDOW_HANDLE = Array("GET", "/session/$sessionId/window_handle")
+    'CMD_GET_CURRENT_WINDOW_HANDLE = Array("GET", "/session/$sessionId/window_handle") 'this command is depreciated - GCUser99's training homework from uezo
     CMD_W3C_GET_CURRENT_WINDOW_HANDLE = Array("GET", "/session/$sessionId/window")
     CMD_GET_WINDOW_HANDLES = Array("GET", "/session/$sessionId/window_handles")
     CMD_W3C_GET_WINDOW_HANDLES = Array("GET", "/session/$sessionId/window/handles")
