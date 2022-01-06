@@ -614,3 +614,41 @@ Private Function Params(ParamArray keysAndValues()) As Dictionary
     Set Params = dict
 End Function
 
+'Scroll to element location
+Public Sub ScrollIntoView(element As WebElement, Optional ByVal AlignTop As Boolean = True, Optional ByVal SessionId As String = vbNullString)
+    Dim Script As String
+    Script = "arguments[0].scrollIntoView(" & LCase(AlignTop) & ");"
+    ExecuteScript Script, , element, SessionId
+End Sub
+
+'Scroll by relative x and y offsets
+Public Sub ScrollBy(Optional ByVal xoffset As Long = 0, Optional ByVal yoffset As Long = 0, Optional ByVal SessionId As String = vbNullString)
+    Dim Script As String
+    Script = "window.scrollBy(" & xoffset & "," & yoffset & ");"
+    ExecuteScript Script, , , SessionId
+End Sub
+
+'Scroll to absolute position x and y
+Public Sub ScrollTo(Optional ByVal x As Long = 0, Optional ByVal y As Long = 0, Optional ByVal SessionId As String = vbNullString)
+    Dim Script As String
+    Script = "window.scrollTo(" & x & "," & y & ");"
+    ExecuteScript Script, , , SessionId
+End Sub
+
+Public Sub ScrollToTop(Optional ByVal SessionId As String = vbNullString)
+    ScrollTo 0, 0, SessionId
+End Sub
+
+Public Sub ScrollToBottom(Optional ByVal SessionId As String = vbNullString)
+    Dim Script As String
+    Script = "window.scrollTo(0, document.body.scrollHeight);"
+    ExecuteScript Script, , , SessionId
+End Sub
+
+'return
+Public Function GetScrollHeight(Optional ByVal SessionId As String = vbNullString)
+    Dim Script As String
+    Script = "return document.body.scrollHeight;"
+    GetScrollHeight = ExecuteScript(Script, , , SessionId)
+End Function
+
