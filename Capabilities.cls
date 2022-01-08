@@ -154,6 +154,27 @@ Private Function BuildCapabilities() As Dictionary
     
 End Function
 
+Public Sub EnableLogging()
+    'enables logging - use GetLog to access logs
+    Dim logs As New Dictionary
+    logs.Add "driver", "ALL"
+    logs.Add "browser", "ALL"
+    Me.Add "goog:loggingPrefs", logs
+End Sub
+
+Public Sub SetDownloadPrefs(Optional ByVal downloadDirectoryPath As String = ".\", Optional userPrompt As Boolean = False)
+    downloadDirectoryPath = GetAbsolutePath(downloadDirectoryPath)
+    'these work for both Chrome and Edge
+    Me.AddPref "download.default_directory", downloadDirectoryPath
+    Me.AddPref "download.directory_upgrade", True
+    Me.AddPref "download.prompt_for_download", userPrompt 'false disables prompting user for download permission
+    Me.AddPref "safebrowsing.enabled", True
+End Sub
+
+Public Sub MakeBrowserInvisible()
+    Me.AddArgument "--headless"
+End Sub                    
+
 Public Function JsonString() As String
     JsonString = JsonConverter.ConvertToJson(BuildCapabilities, 4)
 End Function
@@ -196,3 +217,13 @@ Private Sub Class_Terminate()
     Set alwaysMatchDict = Nothing
     Set prefsDict = Nothing
 End Sub
+
+Private Function GetAbsolutePath(ByVal strpath As String) As String
+    Dim fso As New FileSystemObject
+    saveppath = CurDir()
+    ChDrive ThisWorkbook.path
+    ChDir ThisWorkbook.path
+    GetAbsolutePath = fso.GetAbsolutePathName(strpath)
+    ChDrive saveppath
+    ChDir saveppath
+End Function                                                
