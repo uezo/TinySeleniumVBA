@@ -33,7 +33,7 @@ Public Sub main()
     ' Start WebDriver (Edge)
     Dim Driver As New WebDriver
     Driver.Edge "path\to\msedgedriver.exe"
-    
+
     ' Open browser
     Driver.OpenBrowser
     
@@ -57,6 +57,33 @@ Public Sub main()
     Driver.Execute Driver.CMD_REFRESH
 End Sub
 ```
+
+# 🐙 BrowserOptions
+
+Use `Capabilities` to configure browser options. This is an example to launch browser as headless (invisible) mode.
+
+```vb
+' Start web driver
+Dim Driver As New WebDriver
+Driver.Chrome "C:\Users\uezo\Desktop\chromedriver.exe"
+
+' Configure Capabilities
+Dim cap As Capabilities
+Set cap = Driver.CreateCapabilities()
+cap.AddArgument "--headless"
+' Use SetArguments if you want to add multiple arguments
+' cap.SetArguments "--headless --xxx -xxx"
+
+' Show Capabilities as JSON for debugging
+Debug.Print cap.ToJson()
+
+' Open browser
+Driver.OpenBrowser cap
+```
+
+See also the sites below to understand the spec of `Capabilities` for each browser.
+- Chrome: https://chromedriver.chromium.org/capabilities
+- Edge: https://docs.microsoft.com/en-us/microsoft-edge/webdriver-chromium/capabilities-edge-options
 
 # ❤️ Thanks
 

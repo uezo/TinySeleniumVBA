@@ -58,6 +58,34 @@ Public Sub main()
 End Sub
 ```
 
+# 🐙 ブラウザーオプション
+
+ブラウザーオプションを指定するには `Capabilities` を使うと便利です。以下はヘッドレスモード（非表示モード）でブラウザを起動する例です。
+
+```vb
+' Start web driver
+Dim Driver As New WebDriver
+Driver.Chrome "C:\Users\uezo\Desktop\chromedriver.exe"
+
+' Configure Capabilities
+Dim cap As Capabilities
+Set cap = Driver.CreateCapabilities()
+cap.AddArgument "--headless"
+' Use SetArguments if you want to add multiple arguments
+' cap.SetArguments "--headless --xxx -xxx"
+
+' Show Capabilities as JSON for debugging
+Debug.Print cap.ToJson()
+
+' Open browser
+Driver.OpenBrowser cap
+```
+
+`Capabilities`の仕様はブラウザ毎に異なりますので、以下のWebサイト等にてご確認ください。
+- Chrome: https://chromedriver.chromium.org/capabilities
+- Edge: https://docs.microsoft.com/en-us/microsoft-edge/webdriver-chromium/capabilities-edge-options
+
+
 # ❤️ 謝辞
 
 [VBA-JSON](https://github.com/VBA-tools/VBA-JSON) という Tim Hall さんが開発したVBA用JSONコンバーターはHTTPクライアントを作る上でとても役に立ちました。このすばらしいライブラリは当該ライブラリのライセンスのもとでリリースに含まれています。ありがとうございます！
