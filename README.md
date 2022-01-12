@@ -19,8 +19,8 @@ https://www.w3.org/TR/webdriver/
 
 1. Set reference to `Microsoft Scripting Runtime`
 
-1. Add `WebDriver.cls`, `WebElement.cls` and `JsonConverter.bas` to your VBA Project
-    - Latest (v0.1.1): https://github.com/uezo/TinySeleniumVBA/archive/v0.1.1.zip
+1. Add `WebDriver.cls`, `WebElement.cls`, `Capabilities.cls` and `JsonConverter.bas` to your VBA Project
+    - Latest (v0.1.2): https://github.com/uezo/TinySeleniumVBA/releases/tag/v0.1.2
 
 1. Download WebDriver (driver and browser should be the same version)
     - Edge: https://developer.microsoft.com/ja-jp/microsoft-edge/tools/webdriver/
