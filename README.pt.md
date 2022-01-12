@@ -57,6 +57,33 @@ Public Sub main()
 End Sub
 ```
 
+# 🐙 BrowserOptions
+
+Utilize `Capabilities` para configurar as opções do navegador. Este é um exemplo para lançar o browser como modo sem cabeça (invisível).
+
+```vb
+' Start web driver
+Dim Driver As New WebDriver
+Driver.Chrome "C:\Users\uezo\Desktop\chromedriver.exe"
+
+' Configure Capabilities
+Dim cap As Capabilities
+Set cap = Driver.CreateCapabilities()
+cap.AddArgument "--headless"
+' Use SetArguments if you want to add multiple arguments
+' cap.SetArguments "--headless --xxx -xxx"
+
+' Show Capabilities as JSON for debugging
+Debug.Print cap.ToJson()
+
+' Open browser
+Driver.OpenBrowser cap
+```
+
+Ver também os sites abaixo para compreender as especificações de `Capabilities` para cada navegador.
+- Chrome: https://chromedriver.chromium.org/capabilities
+- Edge: https://docs.microsoft.com/en-us/microsoft-edge/webdriver-chromium/capabilities-edge-options
+
 # ❤️ Agradecimentos
 
 [VBA-JSON](https://github.com/VBA-tools/VBA-JSON) de Tim Hall, um conversor de JSON para VBA que auxilia muito ao fazer um cliente HTTP. Esta valiosa biblioteca está inclusa nesta versão junto com sua respectiva licença. Muito obrigado!

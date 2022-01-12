@@ -7,7 +7,7 @@ Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
-' TinySeleniumVBA v0.1.0
+' TinySeleniumVBA v0.1.2
 ' A tiny Selenium wrapper written in pure VBA
 '
 ' (c)2021 uezo

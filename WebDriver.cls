@@ -7,7 +7,7 @@ Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
-' TinySeleniumVBA v0.1.0
+' TinySeleniumVBA v0.1.2
 ' A tiny Selenium wrapper written in pure VBA
 '
 ' (c)2021 uezo
@@ -176,8 +176,10 @@ Public Enum By
     ClassName = 2
     Name = 3
     CssSelector = 4
-    Xpath = 5
+    XPath = 5
 End Enum
+
+Public BrowserName As String
 
 
 ' ==========================================================================
@@ -186,16 +188,23 @@ End Enum
 
 ' Launch Edge Driver
 Public Sub Edge(ByVal driverPath As String, Optional ByVal driverUrl As String = "http://localhost:9515")
-    Start driverPath, driverUrl
+    Start driverPath, driverUrl, "MicrosoftEdge"
 End Sub
 
 ' Launch Chrome Driver
 Public Sub Chrome(ByVal driverPath As String, Optional ByVal driverUrl As String = "http://localhost:9515")
-    Start driverPath, driverUrl
+    Start driverPath, driverUrl, "chrome"
 End Sub
 
+' Get default capabilities for current browser
+Public Function CreateCapabilities()
+    Dim cap As New Capabilities
+    cap.InitializeFor BrowserName
+    Set CreateCapabilities = cap
+End Function
+
 ' Start WebDriver
-Public Sub Start(ByVal driverPath As String, ByVal driverUrl As String)
+Public Sub Start(ByVal driverPath As String, ByVal driverUrl As String, Optional ByVal driverName As String = vbNullString)
     ' Start WebDriver executable
     If Shell(driverPath, vbMinimizedNoFocus) = 0 Then
         MsgBox "Failed in starting WebDriver"
@@ -207,6 +216,9 @@ Public Sub Start(ByVal driverPath As String, ByVal driverUrl As String)
     
     ' Initialize driver commands
     InitCommands
+    
+    ' Set browser name
+    BrowserName = driverName
 End Sub
 
 ' Shutdown WebDriver
@@ -220,13 +232,20 @@ End Sub
 ' ==========================================================================
 
 ' Open browser
-Public Function OpenBrowser(Optional capabilities As Dictionary = Nothing, Optional desiredCapabilities As Dictionary = Nothing, Optional ByVal useAsDefault As Boolean = True) As String
-    If capabilities Is Nothing Then
-        Set capabilities = New Dictionary
+Public Function OpenBrowser(Optional Capabilities As Object = Nothing, Optional desiredCapabilities As Dictionary = Nothing, Optional ByVal useAsDefault As Boolean = True) As String
+    Dim capDict As Dictionary
+    If TypeName(Capabilities) = "Dictionary" Then
+        Set capDict = Capabilities
+    ElseIf TypeName(Capabilities) = "Capabilities" Then
+        Set capDict = Capabilities.Root
+    ElseIf Capabilities Is Nothing Then
+        Set capDict = New Dictionary
+    Else
+        Err.Raise 13, "WebDriver.OpenBrowser", "Argument capabilities must be an instance of Capabilities or Dictionary"
     End If
-    
+
     Dim resp As Dictionary
-    Set resp = Execute(CMD_NEW_SESSION, Params("capabilities", capabilities, "desiredCapabilities", desiredCapabilities))
+    Set resp = Execute(CMD_NEW_SESSION, Params("capabilities", capDict, "desiredCapabilities", desiredCapabilities))
     
     If useAsDefault Then
         DefaultSessionId = resp("sessionId")
@@ -316,7 +335,7 @@ End Function
 ' by* to CSS selector or Xpath
 Private Function ToSelector(by_ As By, ByVal value As String) As Dictionary
     Dim data As New Dictionary
-    If (by_ = By.Xpath) Then
+    If (by_ = By.XPath) Then
         'Locator Strategy XPath
         data.Add "using", "xpath"
     Else:
@@ -613,4 +632,3 @@ Private Function Params(ParamArray keysAndValues()) As Dictionary
     Next i
     Set Params = dict
 End Function
-
