@@ -7,7 +7,7 @@ Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
-' TinySeleniumVBA v0.1.2
+' TinySeleniumVBA v0.1.3
 ' A tiny Selenium wrapper written in pure VBA
 '
 ' (c)2021 uezo
@@ -421,13 +421,107 @@ Public Function GetText(elementId As String, Optional ByVal sessionId As String 
     GetText = Execute(CMD_GET_ELEMENT_TEXT, data)
 End Function
 
+' Convert dictionary from script to dictionary (converted to web element)
+Private Function ScriptDictToConvertedDict(dict As Variant, Optional ByVal sessionId As String = vbNullString) As Object
+    If dict.Exists(ELEMENT_KEY) Then
+        ' Convert to WebElement
+        Set ScriptDictToConvertedDict = ToWebElement(dict(ELEMENT_KEY), sessionId)
+        ' Return immediately (ignore other items if they exist)
+        Exit Function
+    End If
+
+    Dim ret As New Dictionary
+    Dim key
+    For Each key In dict
+        If TypeName(dict(key)) = "Collection" Then
+            ret(key) = ScriptCollectionToConvertedArray(dict(key))
+        ElseIf TypeName(dict(key)) = "Dictionary" Then
+            Set ret(key) = ScriptDictToConvertedDict(dict(key), sessionId)
+        ElseIf IsObject(dict(key)) Then
+            Set ret(key) = dict(key)
+        Else
+            ret(key) = dict(key)
+        End If
+    Next
+    
+    Set ScriptDictToConvertedDict = ret
+End Function
+
+' Convert collection from script to array
+Private Function ScriptCollectionToConvertedArray(col As Variant, Optional ByVal sessionId As String = vbNullString) As Variant()
+    Dim ary()
+    ReDim ary(col.Count - 1)
+    Dim i As Integer
+    
+    For i = 0 To UBound(ary)
+        If TypeName(col(i + 1)) = "Collection" Then
+            ary(i) = ScriptCollectionToConvertedArray(col(i + 1))
+        ElseIf TypeName(col(i + 1)) = "Dictionary" Then
+            Set ary(i) = ScriptDictToConvertedDict(col(i + 1), sessionId)
+        ElseIf IsObject(col(i + 1)) Then
+            Set ary(i) = col(i + 1)
+        Else
+            ary(i) = col(i + 1)
+        End If
+    Next
+    ScriptCollectionToConvertedArray = ary
+End Function
+
+' Execute script
+Public Function ExecuteScript(ByVal script As String, Optional scriptArguments As Variant = Empty, Optional ByVal sessionId As String = vbNullString)
+    Dim data As New Dictionary
+    If sessionId <> vbNullString Then
+        data.Add "sessionId", sessionId
+    End If
+    data.Add "script", script
+    
+    Dim args()
+    If Not IsEmpty(scriptArguments) Then
+        ' Abort if scriptArguments passed but not array
+        If VarType(scriptArguments) < vbArray Then
+            Err.Raise 13, "WebDriver.ExecuteScript", "scriptArguments must be array"
+        End If
+        
+        Dim i As Integer
+        For i = 0 To UBound(scriptArguments)
+            ReDim Preserve args(i)
+            If TypeName(scriptArguments(i)) = "WebElement" Then
+                ' Convert WebElement to Dictionary that can be handled by WebDriver
+                Dim elem As New Dictionary
+                elem.Add ELEMENT_KEY, scriptArguments(i).ElementId_
+                Set args(i) = elem
+            Else
+                args(i) = scriptArguments(i)
+            End If
+        Next
+    End If
+    data.Add "args", args
+
+    ' Use resp temporarily to return value that varies depending on the contents of script
+    Dim resp
+    Set resp = Execute(CMD_W3C_EXECUTE_SCRIPT, data, True)
+    
+    If TypeName(resp("value")) = "Collection" Then
+        ExecuteScript = ScriptCollectionToConvertedArray(resp("value"), sessionId)
+    ElseIf TypeName(resp("value")) = "Dictionary" Then
+        If resp("value").Exists("error") Then
+            Err.Raise 513, "WebDriver.ExecuteScript", JsonConverter.ConvertToJson(resp("value"))
+        End If
+        Set ExecuteScript = ScriptDictToConvertedDict(resp("value"), sessionId)
+    ElseIf IsObject(resp("value")) Then
+        Set ExecuteScript = resp("value")
+    Else
+        ExecuteScript = resp("value")
+    End If
+End Function
+
 
 ' ==========================================================================
 ' Common functions
 ' ==========================================================================
 
 ' Execute driver command
-Public Function Execute(driverCommand, Optional parameters As Dictionary = Nothing)
+Public Function Execute(driverCommand, Optional parameters As Dictionary = Nothing, Optional asRawResponse As Boolean = False)
     Dim method As String: method = driverCommand(0)
     Dim path As String: path = driverCommand(1)
     If parameters Is Nothing Then
@@ -452,8 +546,10 @@ Public Function Execute(driverCommand, Optional parameters As Dictionary = Nothi
     Set resp = SendRequest(method, UrlBase + path, parameters)
     
     ' Return value(s)
-    If IsNull(resp("value")) Then
-        Set Execute = New Dictionary
+    If asRawResponse Then
+        Set Execute = resp
+    ElseIf IsNull(resp("value")) Then
+        Set Execute = Nothing
     ElseIf TypeName(resp("value")) = "Collection" Then
         Set Execute = resp("value")
     ElseIf VarType(resp("value")) = vbObject Then

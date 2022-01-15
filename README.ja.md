@@ -86,6 +86,61 @@ Driver.OpenBrowser cap
 - Edge: https://docs.microsoft.com/en-us/microsoft-edge/webdriver-chromium/capabilities-edge-options
 
 
+# ⚡️ JavaScriptの実行
+
+`ExecuteScript()`を利用することで、ブラウザ上で任意のJavaScriptコードを実行することができます。
+
+```vb
+' Start web driver
+Dim Driver As New WebDriver
+Driver.Chrome "C:\Users\uezo\Desktop\chromedriver.exe"
+
+' Open browser
+Driver.OpenBrowser
+
+' Navigate to Google
+Driver.Navigate "https://www.google.co.jp/?q=liella"
+
+' Show alert
+Driver.ExecuteScript "alert('Hello TinySeleniumVBA')"
+
+' === Use breakpoint to CLOSE ALERT before continue ===
+
+' Pass argument
+Driver.ExecuteScript "alert('Hello ' + arguments[0] + ' as argument')", Array("TinySeleniumVBA")
+
+' === Use breakpoint to CLOSE ALERT before continue ===
+
+' Pass element as argument
+Dim searchInput
+Set searchInput = Driver.FindElement(By.Name, "q")
+Driver.ExecuteScript "alert('Hello ' + arguments[0].value + ' ' + arguments[1])", Array(searchInput, "TinySeleniumVBA")
+
+' === CLOSE ALERT and continue ===
+
+' Get return value from script
+Dim retStr As String
+retStr = Driver.ExecuteScript("return 'Value from script'")
+Debug.Print retStr
+
+' Get WebElement as return value from script
+Dim firstDiv As WebElement
+Set firstDiv = Driver.ExecuteScript("return document.getElementsByTagName('div')[0]")
+Debug.Print firstDiv.GetText()
+
+' Get complex structure as return value from script
+Dim retArray
+retArray = Driver.ExecuteScript("return [['a', '1'], {'key1': 'val1', 'key2': document.getElementsByTagName('div'), 'key3': 'val3'}]")
+
+Debug.Print retArray(0)(0)  ' a
+Debug.Print retArray(0)(1)  ' 1
+
+Debug.Print retArray(1)("key1") ' val1
+Debug.Print retArray(1)("key2")(0).GetText()    ' Inner Text
+Debug.Print retArray(1)("key2")(1).GetText()    ' Inner Text
+Debug.Print retArray(1)("key3") ' val3
+```
+
 # ❤️ 謝辞
 
 [VBA-JSON](https://github.com/VBA-tools/VBA-JSON) という Tim Hall さんが開発したVBA用JSONコンバーターはHTTPクライアントを作る上でとても役に立ちました。このすばらしいライブラリは当該ライブラリのライセンスのもとでリリースに含まれています。ありがとうございます！
