@@ -20,7 +20,7 @@ https://www.w3.org/TR/webdriver/
 1. ツール＞参照設定から `Microsoft Scripting Runtime` に参照を通してください
 
 1. `WebDriver.cls`、`WebElement.cls`、`Capabilities.cls`、`JsonConverter.bas`をプロジェクトに追加してください
-    - 最新版 (v0.1.2): https://github.com/uezo/TinySeleniumVBA/releases/tag/v0.1.2
+    - 最新版 (v0.1.3): https://github.com/uezo/TinySeleniumVBA/releases/tag/v0.1.3
 
 1. WebDriverをダウンロードしてください（ブラウザのメジャーバージョンと同じもの）
     - Edge: https://developer.microsoft.com/ja-jp/microsoft-edge/tools/webdriver/
