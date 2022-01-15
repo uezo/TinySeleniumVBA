@@ -65,7 +65,7 @@ End Sub
 ```vb
 ' Start web driver
 Dim Driver As New WebDriver
-Driver.Chrome "C:\Users\uezo\Desktop\chromedriver.exe"
+Driver.Chrome "C:\path\to\chromedriver.exe"
 
 ' Configure Capabilities
 Dim cap As Capabilities
@@ -93,7 +93,7 @@ Driver.OpenBrowser cap
 ```vb
 ' Start web driver
 Dim Driver As New WebDriver
-Driver.Chrome "C:\Users\uezo\Desktop\chromedriver.exe"
+Driver.Chrome "C:\path\to\chromedriver.exe"
 
 ' Open browser
 Driver.OpenBrowser

@@ -64,7 +64,7 @@ Utilize `Capabilities` para configurar as opções do navegador. Este é um exem
 ```vb
 ' Start web driver
 Dim Driver As New WebDriver
-Driver.Chrome "C:\Users\uezo\Desktop\chromedriver.exe"
+Driver.Chrome "C:\path\to\chromedriver.exe"
 
 ' Configure Capabilities
 Dim cap As Capabilities
@@ -92,7 +92,7 @@ Utilize `ExecuteScript()` para executar JavaScript no browser.
 ```vb
 ' Start web driver
 Dim Driver As New WebDriver
-Driver.Chrome "C:\Users\uezo\Desktop\chromedriver.exe"
+Driver.Chrome "C:\path\to\chromedriver.exe"
 
 ' Open browser
 Driver.OpenBrowser
